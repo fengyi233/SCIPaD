@@ -1,0 +1,21 @@
+device: 0
+exp_name: 'kitti_odom'
+disable_triplet_loss: True
+dataset:
+  name: 'kitti_odom'
+  data_path: '/home/fengyi/datasets/kitti_odom'
+  split: 'odom'
+train:
+  epochs: 30
+  batch_size: 12
+  lr: 1e-4
+  num_workers: 20
+stunet:
+  backbone: 'resnet18'
+teanet:
+  backbone: 'resnet18'
+posenet:
+  version: 'PoseNet'
+  backbone: 'resnet18'
+eval:
+  split: 'odom_09'

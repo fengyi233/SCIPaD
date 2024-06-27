@@ -1,0 +1,18 @@
+device: 0
+exp_name: 'debug'
+dataset:
+  name: kitti
+  data_path: '/home/fengyi/datasets/kitti_mono2'
+train:
+  epochs: 20
+  batch_size: 4
+  lr: 1e-4
+  num_workers: 1
+stunet:
+  backbone: 'resnet18'
+teanet:
+  backbone: 'resnet18'
+posenet:
+  version: 'PoseNetV1'
+  backbone: 'resnet18'
+
