@@ -14,32 +14,6 @@ from utils.config import get_default_config
 from utils.utils import vis_tensor
 
 
-# class PosTokenAggregation(nn.Module):
-#     def __init__(self, embed_dim, kernel_size=3, stride=1, padding=1):
-#         super(PosTokenAggregation, self).__init__()
-#         self.depthwise = nn.Sequential(nn.Conv2d(embed_dim, embed_dim, kernel_size,
-#                                                  stride, padding, groups=embed_dim),
-#                                        nn.BatchNorm2d(embed_dim),
-#                                        nn.LeakyReLU(0.1, inplace=True))
-#         self.pointwise = nn.Sequential(nn.Conv2d(embed_dim, embed_dim, 1),
-#                                        nn.BatchNorm2d(embed_dim),
-#                                        nn.LeakyReLU(0.1, inplace=True))
-#
-#     def forward(self, pos_feature_list):
-#         pos_feats = pos_feature_list[0] + pos_feature_list[1]
-#         pos_feats = self.depthwise(pos_feats)
-#         pos_feats = self.pointwise(pos_feats)
-#         return pos_feats
-#
-#         # feats = pos_feature_list[-1]
-#         # _, _, h, w = feats.shape
-#         # for pos_feature in pos_feature_list[:-1]:
-#         #     feats += F.interpolate(pos_feature, size=(h, w), mode='bilinear')
-#         # feats = self.depthwise(feats)
-#         # feats = self.pointwise(feats)
-#         # return feats
-
-
 class CAFFE(nn.Module):
     """
     Confidence Aware Feature Flow Estimator.
@@ -179,7 +153,7 @@ class PCA(nn.Module):
         return pos
 
     def pc_norm(self, point_cloud):
-        pc = (point_cloud - point_cloud.min()) / (point_cloud.max() - point_cloud.min())
+        pc = (point_cloud - point_cloud.min()) / (point_cloud.max() - point_cloud.min() + 1e-8)
         return pc
 
     def forward(self, feat_flow_list, confidence_list, point_cloud):

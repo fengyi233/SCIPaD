@@ -76,4 +76,4 @@ done
 
 
 python train.py --config configs/posenet.yaml \
-  exp_name posenet
+  exp_name scipad

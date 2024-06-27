@@ -13,6 +13,6 @@ stunet:
 teanet:
   backbone: 'resnet18'
 posenet:
-  version: 'PoseNetV1'
+  version: 'PoseNet'
   backbone: 'resnet18'
 
