@@ -167,3 +167,4 @@ runs/
 *.npz
 *.npy
 configs/
+checkpoints/
