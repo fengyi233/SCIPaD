@@ -1,11 +1,8 @@
 imageio==2.34.2
 matplotlib==3.9.1
-omegaconf==2.3.0
 opencv-python==4.10.0.84
 scikit-image==0.24.0
 tensorboardX==2.6.2.2
 termcolor==2.4.0
-torch==2.3.0+cu118
-torchvision==0.18.0+cu118
 tqdm==4.66.4
 yacs==0.1.8
