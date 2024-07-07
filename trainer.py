@@ -173,14 +173,29 @@ class Trainer:
         mono_outputs = {}
         outputs = {}
 
-        # predict poses for all frames
+        # single frame path
         if self.train_teacher_and_pose:
-            pose_pred = self.predict_poses(inputs)
+            feats = self.models["mono_enc"](inputs["color_aug", 0, 0])
+            mono_outputs.update(self.models['mono_dec'](feats))
         else:
             with torch.no_grad():
-                pose_pred = self.predict_poses(inputs)
+                feats = self.models["mono_enc"](inputs["color_aug", 0, 0])
+                mono_outputs.update(self.models['mono_dec'](feats))
+        b,_,h,w = mono_outputs[("disp", 0)].shape
+        _, depth = disp_to_depth(mono_outputs[("disp", 0)], self.cfg.dataset.min_depth, self.cfg.dataset.max_depth)
+        point_cloud = self.backproject_depth[0](depth, inputs[("inv_K", 0)])[:, :3, :].view(b, -1, h, w)  #
+
+        # predict poses for all frames
+        if self.train_teacher_and_pose:
+            pose_pred = self.predict_poses(inputs, point_cloud)
+        else:
+            with torch.no_grad():
+                pose_pred = self.predict_poses(inputs, point_cloud)
         outputs.update(pose_pred)
         mono_outputs.update(pose_pred)
+
+        self.generate_images_pred(inputs, mono_outputs)
+        mono_losses = self.compute_losses(inputs, mono_outputs, is_multi=False)
 
         # grab poses + frames and stack for input to the multi frame network
         relative_poses = [inputs[('relative_pose', idx)] for idx in self.matching_ids[1:]]
@@ -210,18 +225,6 @@ class Trainer:
 
         min_depth_bin = self.min_depth_tracker
         max_depth_bin = self.max_depth_tracker
-
-        # single frame path
-        if self.train_teacher_and_pose:
-            feats = self.models["mono_enc"](inputs["color_aug", 0, 0])
-            mono_outputs.update(self.models['mono_dec'](feats))
-        else:
-            with torch.no_grad():
-                feats = self.models["mono_enc"](inputs["color_aug", 0, 0])
-                mono_outputs.update(self.models['mono_dec'](feats))
-
-        self.generate_images_pred(inputs, mono_outputs)
-        mono_losses = self.compute_losses(inputs, mono_outputs, is_multi=False)
 
         # update multi frame outputs dictionary with single frame outputs
         for key in list(mono_outputs.keys()):
@@ -282,7 +285,7 @@ class Trainer:
         self.max_depth_tracker = self.max_depth_tracker * 0.99 + max_depth * 0.01
         self.min_depth_tracker = self.min_depth_tracker * 0.99 + min_depth * 0.01
 
-    def predict_poses(self, inputs):
+    def predict_poses(self, inputs, pc):
         """Predict poses between input frames for monocular sequences.
         """
         outputs = {}
@@ -291,9 +294,9 @@ class Trainer:
             if f_i != "s":
                 # To maintain ordering we always pass frames in temporal order
                 if f_i < 0:
-                    axisangle, translation = self.models["posenet"](pose_feats[f_i], pose_feats[0])
+                    axisangle, translation = self.models["posenet"](pose_feats[f_i], pose_feats[0], pc)
                 else:
-                    axisangle, translation = self.models["posenet"](pose_feats[0], pose_feats[f_i])
+                    axisangle, translation = self.models["posenet"](pose_feats[0], pose_feats[f_i], pc)
 
                 outputs[("axisangle", 0, f_i)] = axisangle
                 outputs[("translation", 0, f_i)] = translation
@@ -308,7 +311,7 @@ class Trainer:
             # compute pose from 0->-1, -1->-2, -2->-3 etc and multiply to find 0->-3
             for fi in self.matching_ids[1:]:
                 if fi < 0:
-                    axisangle, translation = self.models["posenet"](pose_feats[fi], pose_feats[fi + 1])
+                    axisangle, translation = self.models["posenet"](pose_feats[fi], pose_feats[fi + 1], pc)
                     pose = transformation_from_parameters(
                         axisangle[:, 0], translation[:, 0], invert=True)
 
@@ -317,7 +320,7 @@ class Trainer:
                         pose = torch.matmul(pose, inputs[('relative_pose', fi + 1)])
 
                 else:
-                    axisangle, translation = self.models["posenet"](pose_feats[fi - 1], pose_feats[fi])
+                    axisangle, translation = self.models["posenet"](pose_feats[fi - 1], pose_feats[fi], pc)
                     pose = transformation_from_parameters(
                         axisangle[:, 0], translation[:, 0], invert=False)
 

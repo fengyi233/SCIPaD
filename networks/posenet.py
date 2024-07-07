@@ -360,7 +360,7 @@ class PoseNet(nn.Module):
         self.decoder = PoseDecoder(cfg)
 
     def forward(self, img_tgt, img_ref, point_cloud=None):
-        if not point_cloud:
+        if point_cloud is None:
             point_cloud = torch.zeros_like(img_tgt)
         sem_feat_list = self.sem_feature_extractor(torch.cat([img_tgt, img_ref], dim=1))
         feat_tgt_list = self.frozen_feature_extractor(img_tgt)
