@@ -46,13 +46,13 @@ You can download weights for pretrained models from the
 |:----------|:-------:|:-------:|:------:|:-----:|:--------:|:---------------:|:-----------------:|:-----------------:|
 | KITTI Raw | 640x192 |  0.090  | 0.650  | 4.056 |  0.166   |      0.918      |       0.970       |       0.985       |
 
-| Methods    |   WxH   | Seq09 $e_t$(%) | Seq09 $e_r$(%) | Seq09 ATE(m) | Seq10 $e_t$(%) | Seq10 $e_r$(%) | Seq10 ATE(m) |
-|:-----------|:-------:|:--------------:|:--------------:|:------------:|:--------------:|:--------------:|:------------:|
-| KITTI Odom | 640x192 |      7.43      |      2.46      |    26.15     |      9.82      |      3.87      |    15.51     |
+| Methods    |   WxH   | Seq09 $e_t$ | Seq09 e_r$ | Seq09 ATE | Seq10 $e_t$ | Seq10 $e_r$ | Seq10 ATE |
+|:-----------|:-------:|:-----------:|:----------:|:---------:|:-----------:|:-----------:|:---------:|
+| KITTI Odom | 640x192 |    7.43     |    2.46    |   26.15   |    9.82     |    3.87     |   15.51   |
 
 Create a `./checkpoints/` folder and place the pretrained models inside it.
 
-## 💾 Dataset Preparationasdf
+## 💾 Dataset Preparation
 
 * **KITTI Raw Dataset:**
   You can download the [KITTI raw dataset](https://www.cvlibs.net/datasets/kitti/raw_data.php) and convert the png
