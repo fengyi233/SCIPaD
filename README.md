@@ -1,5 +1,7 @@
 # SCIPaD
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/scipad-incorporating-spatial-clues-into/camera-pose-estimation-on-kitti-odometry)](https://paperswithcode.com/sota/camera-pose-estimation-on-kitti-odometry?p=scipad-incorporating-spatial-clues-into)
+
 Official implementation of "SCIPaD: Incorporating Spatial Clues into Unsupervised Pose-Depth Joint Learning"(T-IV 2024).
 
 [[paper]()] [[arxiv]()] [[website](https://mias.group/SCIPaD/)]
