@@ -294,9 +294,9 @@ class Trainer:
             if f_i != "s":
                 # To maintain ordering we always pass frames in temporal order
                 if f_i < 0:
-                    axisangle, translation = self.models["posenet"](pose_feats[f_i], pose_feats[0], pc)
+                    axisangle, translation = self.models["posenet"](pose_feats[f_i], pose_feats[0])
                 else:
-                    axisangle, translation = self.models["posenet"](pose_feats[0], pose_feats[f_i], pc)
+                    axisangle, translation = self.models["posenet"](pose_feats[0], pose_feats[f_i])
 
                 outputs[("axisangle", 0, f_i)] = axisangle
                 outputs[("translation", 0, f_i)] = translation
@@ -311,7 +311,7 @@ class Trainer:
             # compute pose from 0->-1, -1->-2, -2->-3 etc and multiply to find 0->-3
             for fi in self.matching_ids[1:]:
                 if fi < 0:
-                    axisangle, translation = self.models["posenet"](pose_feats[fi], pose_feats[fi + 1], pc)
+                    axisangle, translation = self.models["posenet"](pose_feats[fi], pose_feats[fi + 1])
                     pose = transformation_from_parameters(
                         axisangle[:, 0], translation[:, 0], invert=True)
 
@@ -320,7 +320,7 @@ class Trainer:
                         pose = torch.matmul(pose, inputs[('relative_pose', fi + 1)])
 
                 else:
-                    axisangle, translation = self.models["posenet"](pose_feats[fi - 1], pose_feats[fi], pc)
+                    axisangle, translation = self.models["posenet"](pose_feats[fi - 1], pose_feats[fi])
                     pose = transformation_from_parameters(
                         axisangle[:, 0], translation[:, 0], invert=False)
 
