@@ -166,5 +166,4 @@ cython_debug/
 runs/
 *.npz
 *.npy
-configs/
 checkpoints/
